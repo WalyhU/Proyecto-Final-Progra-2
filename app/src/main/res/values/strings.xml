@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">PetStore</string>
+    <string name="home">Inicio</string>
+    <string name="pet_catalog">Mascotas</string>
+    <string name="food_catalog">Alimentos</string>
+    <string name="accessories_catalog">Accesorios</string>
+</resources>
