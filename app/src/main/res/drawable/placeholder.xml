@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Fondo gris claro como fondo del placeholder -->
+    <item android:drawable="@android:color/darker_gray" />
+
+    <!-- Texto que se muestra en el centro del placeholder -->
+    <item android:width="100dp" android:height="100dp" android:gravity="center">
+        <bitmap android:gravity="center" android:src="@drawable/ic_launcher_background" />
+    </item>
+</selector>
