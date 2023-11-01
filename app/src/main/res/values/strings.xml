@@ -1,8 +1,11 @@
 <resources>
     <string name="app_name">PetStore</string>
+    <string name="web_client_id">1020146226096-sh43u4rbthdohjrtkci3nalpmu0nvlrd.apps.googleusercontent.com</string>
+    <string name="sign_in">Iniciar Sesion</string>
     <string name="home">Inicio</string>
     <string name="pet_catalog">Mascotas</string>
     <string name="food_catalog">Alimentos</string>
     <string name="accessories_catalog">Accesorios</string>
     <string name="description" />
+    <string name="profile">Perfil</string>
 </resources>
