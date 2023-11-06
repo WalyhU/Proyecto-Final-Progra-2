@@ -14,60 +14,25 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import gt.edu.miumg.petstore.R
 import gt.edu.miumg.petstore.components.Cards
+import gt.edu.miumg.petstore.util.Response
+import gt.edu.miumg.petstore.viewmodels.CarritoViewModel
+import gt.edu.miumg.petstore.viewmodels.PetViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PetCatalog(navController: NavController) {
+    // Test para extraer datos de firebase
+    val petviewmodel : PetViewModel = hiltViewModel()
+    petviewmodel.getPetInfo()
     val title = stringResource(id = R.string.pet_catalog)
-    val pets = mapOf(
-        "Dog" to mapOf(
-            "image" to R.drawable.perro,
-            "title" to "Dog",
-            "description" to "Dog description",
-            "price" to 100.00,
-            "buttonText" to "Buy",
-            "onFavoriteClick" to { /*TODO*/ }
-        ),
-        "Cat" to mapOf(
-            "image" to R.drawable.gato,
-            "title" to "Cat",
-            "description" to "Cat description",
-            "price" to 100.00,
-            "buttonText" to "Buy",
-            "onFavoriteClick" to { /*TODO*/ }
-        ),
-        "Bird" to mapOf(
-            "image" to R.drawable.pajaro,
-            "title" to "Bird",
-            "description" to "Bird description",
-            "price" to 100.00,
-            "buttonText" to "Buy",
-            "onFavoriteClick" to { /*TODO*/ }
-        ),
-        "Fish" to mapOf(
-            "image" to R.drawable.pez,
-            "title" to "Fish",
-            "description" to "Fish description",
-            "price" to 100.00,
-            "buttonText" to "Buy",
-            "onFavoriteClick" to { /*TODO*/ }
-        ),
-        "Hamster" to mapOf(
-            "image" to R.drawable.hamster,
-            "title" to "Hamster",
-            "description" to "Hamster description",
-            "price" to 100.00,
-            "buttonText" to "Buy",
-            "onFavoriteClick" to { /*TODO*/ }
-        )
-    )
-    Scaffold (
+    Scaffold(
         content = {
-            Column (
+            Column(
                 modifier = Modifier
                     .padding(start = 16.dp, end = 16.dp)
             ) {
@@ -77,15 +42,26 @@ fun PetCatalog(navController: NavController) {
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(16.dp)
                 )
-                LazyVerticalGrid(
-                    columns = GridCells.Adaptive(minSize = 140.dp),
-                    modifier = Modifier.padding(5.dp)
-                ) {
-                    pets.forEach { (key, value) ->
-                        item {
-                            Cards(
-                                data = value,
-                            )
+                when(val response = petviewmodel.getPets.value) {
+                    is Response.Loading -> {
+                        Text(text = "Cargando...")
+                    }
+                    is Response.Error -> {
+                        Text(text = response.message)
+                    }
+                    is Response.Success -> {
+                        LazyVerticalGrid(
+                            columns = GridCells.Adaptive(minSize = 140.dp),
+                            modifier = Modifier.padding(5.dp)
+                        ) {
+                            response.data?.forEach { pet ->
+                                item {
+                                    Cards(
+                                        pet,
+                                        carritoViewModel = CarritoViewModel()
+                                    )
+                                }
+                            }
                         }
                     }
                 }

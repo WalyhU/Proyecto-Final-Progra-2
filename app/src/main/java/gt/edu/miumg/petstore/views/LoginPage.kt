@@ -56,8 +56,8 @@ fun SignInPage(
         Box(
             modifier = Modifier
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.secondary)
-                .border(4.dp, MaterialTheme.colorScheme.primary)
+                .background(MaterialTheme.colorScheme.primary)
+                .border(4.dp, MaterialTheme.colorScheme.secondary, CircleShape)
         ) {
             AsyncImage(
                 model = R.drawable.perrito,

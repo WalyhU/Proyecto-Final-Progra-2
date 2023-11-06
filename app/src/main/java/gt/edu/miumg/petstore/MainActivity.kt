@@ -44,9 +44,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.google.android.gms.auth.api.identity.Identity
+import dagger.hilt.android.AndroidEntryPoint
 import gt.edu.miumg.petstore.sign_in.GoogleAuthUiClient
-import gt.edu.miumg.petstore.viewmodels.SignInViewModel
 import gt.edu.miumg.petstore.ui.theme.PetStoreTheme
+import gt.edu.miumg.petstore.viewmodels.CarritoViewModel
+import gt.edu.miumg.petstore.viewmodels.SignInViewModel
 import gt.edu.miumg.petstore.views.AccessoriesCatalog
 import gt.edu.miumg.petstore.views.FoodCatalog
 import gt.edu.miumg.petstore.views.HomePage
@@ -55,6 +57,7 @@ import gt.edu.miumg.petstore.views.ProfilePage
 import gt.edu.miumg.petstore.views.SignInPage
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val googleAuthUiClient by lazy {
         GoogleAuthUiClient(
@@ -132,7 +135,7 @@ class MainActivity : ComponentActivity() {
                     ) { innerPadding ->
                         NavHost(
                             navController,
-                            startDestination = Screen.SignIn.route,
+                            startDestination = Screen.Home.route,
                             Modifier.padding(innerPadding)
                         ) {
                             composable(Screen.SignIn.route) {
@@ -193,7 +196,7 @@ class MainActivity : ComponentActivity() {
                                         navController.navigate(Screen.SignIn.route)
                                     }
                                 }
-                                HomePage()
+                                HomePage(CarritoViewModel())
                             }
                             composable(Screen.PetCatalog.route) {
                                 LaunchedEffect(key1 = Unit) {
@@ -247,3 +250,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+

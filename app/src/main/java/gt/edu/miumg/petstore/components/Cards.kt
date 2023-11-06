@@ -17,6 +17,7 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,12 +36,16 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Scale
 import gt.edu.miumg.petstore.R
+import gt.edu.miumg.petstore.models.CarritoState
+import gt.edu.miumg.petstore.models.PetState
+import gt.edu.miumg.petstore.viewmodels.CarritoViewModel
 
 @Composable
 fun Cards(
-    data: Map<String, Any>,
+    data: PetState,
     modifier: Modifier = Modifier.padding(5.dp),
-    shape: RoundedCornerShape = RoundedCornerShape(10.dp)
+    shape: RoundedCornerShape = RoundedCornerShape(10.dp),
+    carritoViewModel: CarritoViewModel
 ) {
     Card(
         colors = CardDefaults.cardColors(
@@ -60,7 +65,7 @@ fun Cards(
                     .fillMaxSize()
                     .clip(shape = RoundedCornerShape(8.dp)),
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(data["image"])
+                    .data(data.image)
                     .crossfade(true)
                     .scale(Scale.FILL)
                     .build(),
@@ -83,7 +88,7 @@ fun Cards(
                 horizontalAlignment = Alignment.Start
             ){
                 Text(
-                    text = data["title"] as String,
+                    text = data.title,
                     style = MaterialTheme.typography.bodyLarge,
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center,
@@ -91,13 +96,13 @@ fun Cards(
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 Text(
-                    text = data["description"] as String,
+                    text = data.description as String,
                     fontSize = 12.sp,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 Text(
-                    text = "Q${data["price"]}",
+                    text = "Q${data.price}",
                     fontSize = 25.sp,
                     fontWeight = FontWeight.ExtraBold,
                     textAlign = TextAlign.Center,
@@ -119,14 +124,26 @@ fun Cards(
                         .height(20.dp)
                         .width(20.dp)
                 )
-                Icon(
-                    Icons.Filled.ShoppingCart,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.tertiary,
-                    modifier = Modifier
-                        .height(20.dp)
-                        .width(20.dp)
-                )
+                IconButton(onClick = {
+                    val cartData = CarritoState(
+                        uid = "123" + data.title,
+                        title = data.title,
+                        description = data.description,
+                        price = data.price,
+                        image = data.image,
+                        quantity = 1
+                    )
+                    carritoViewModel.addCarrito(cartData)
+                }) {
+                    Icon(
+                        Icons.Filled.ShoppingCart,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier
+                            .height(20.dp)
+                            .width(20.dp)
+                    )
+                }
             }
         }
     }
