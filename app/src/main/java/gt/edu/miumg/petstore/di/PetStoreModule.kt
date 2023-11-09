@@ -7,14 +7,19 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import gt.edu.miumg.petstore.data.CartRepositoryImpl
 import gt.edu.miumg.petstore.data.PetRepositoryImpl
+import gt.edu.miumg.petstore.data.SearchRepositoryImpl
 import gt.edu.miumg.petstore.repository.CartRepository
 import gt.edu.miumg.petstore.repository.PetRepository
+import gt.edu.miumg.petstore.repository.SearchRepository
 import gt.edu.miumg.petstore.use_cases.CartUseCases.CartUseCases
 import gt.edu.miumg.petstore.use_cases.CartUseCases.DeleteElement
 import gt.edu.miumg.petstore.use_cases.CartUseCases.GetCart
 import gt.edu.miumg.petstore.use_cases.CartUseCases.SetCart
 import gt.edu.miumg.petstore.use_cases.PetUseCases.GetPets
 import gt.edu.miumg.petstore.use_cases.PetUseCases.PetUseCases
+import gt.edu.miumg.petstore.use_cases.SearchUseCases.GetAllSearch
+import gt.edu.miumg.petstore.use_cases.SearchUseCases.GetSearchByCollection
+import gt.edu.miumg.petstore.use_cases.SearchUseCases.SearchUseCases
 import javax.inject.Singleton
 
 @Module
@@ -50,5 +55,18 @@ object PetStoreModule {
         getCart = GetCart(repository),
         setCart = SetCart(repository),
         deleteElement = DeleteElement(repository)
+    )
+
+    @Singleton
+    @Provides
+    fun provideSearchRepository(firebaseFirestore: FirebaseFirestore): SearchRepository {
+        return SearchRepositoryImpl(firebaseFirestore)
+    }
+
+    @Singleton
+    @Provides
+    fun provideSearchUseCases(repository: SearchRepository) = SearchUseCases(
+        getAllSearch = GetAllSearch(repository),
+        getSearchByCollection = GetSearchByCollection(repository)
     )
 }

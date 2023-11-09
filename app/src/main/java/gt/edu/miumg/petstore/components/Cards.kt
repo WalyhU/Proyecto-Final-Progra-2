@@ -93,7 +93,7 @@ fun Cards(
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
-                    text = data.title,
+                    text = data.title as String,
                     style = MaterialTheme.typography.bodyLarge,
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center,

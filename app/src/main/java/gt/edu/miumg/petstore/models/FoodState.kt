@@ -1,6 +1,6 @@
 package gt.edu.miumg.petstore.models
 
-data class PetState(
+data class FoodState(
     val image: String?,
     val title: String?,
     val description: String?,

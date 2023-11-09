@@ -29,6 +29,7 @@ import gt.edu.miumg.petstore.R
 import gt.edu.miumg.petstore.components.AddToCartAnimation
 import gt.edu.miumg.petstore.components.Cards
 import gt.edu.miumg.petstore.components.CartItem
+import gt.edu.miumg.petstore.components.FloatingCarritoButton
 import gt.edu.miumg.petstore.components.SuccessDialog
 import gt.edu.miumg.petstore.models.CartItem
 import gt.edu.miumg.petstore.models.CartState
@@ -60,6 +61,13 @@ fun PetCatalog(
     Scaffold(
         bottomBar = {
             AddToCartAnimation(inCart = inCart, data = animationData)
+        },
+        floatingActionButton = {
+            FloatingCarritoButton(
+                onClick = {
+                    scope.launch { sheetState.show() }
+                    cartViewModel.showBottomSheet = true
+                })
         },
         content = {
             Column(
