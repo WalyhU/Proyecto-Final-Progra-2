@@ -7,6 +7,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -29,6 +31,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -47,7 +50,6 @@ import com.google.android.gms.auth.api.identity.Identity
 import dagger.hilt.android.AndroidEntryPoint
 import gt.edu.miumg.petstore.sign_in.GoogleAuthUiClient
 import gt.edu.miumg.petstore.ui.theme.PetStoreTheme
-import gt.edu.miumg.petstore.viewmodels.CarritoViewModel
 import gt.edu.miumg.petstore.viewmodels.SignInViewModel
 import gt.edu.miumg.petstore.views.AccessoriesCatalog
 import gt.edu.miumg.petstore.views.FoodCatalog
@@ -85,6 +87,13 @@ class MainActivity : ComponentActivity() {
                         Screen.FoodCatalog to Icons.Filled.Favorite,
                         Screen.AccessoriesCatalog to Icons.Filled.Star,
                         Screen.Profile to Icons.Filled.AccountCircle
+                    )
+                    var imageAnimation by remember { mutableStateOf("") }
+                    var animateButton by remember { mutableStateOf(false) }
+                    val animationProgress by animateFloatAsState(
+                        targetValue =
+                        if (animateButton) 1f else 0f,
+                        animationSpec = tween(durationMillis = 1000)
                     )
                     Scaffold(
                         bottomBar = {
@@ -196,7 +205,9 @@ class MainActivity : ComponentActivity() {
                                         navController.navigate(Screen.SignIn.route)
                                     }
                                 }
-                                HomePage(CarritoViewModel())
+                                HomePage(
+                                    userData = googleAuthUiClient.getSignedInUser()!!
+                                )
                             }
                             composable(Screen.PetCatalog.route) {
                                 LaunchedEffect(key1 = Unit) {
@@ -204,7 +215,9 @@ class MainActivity : ComponentActivity() {
                                         navController.navigate(Screen.SignIn.route)
                                     }
                                 }
-                                PetCatalog(navController)
+                                PetCatalog(
+                                    googleAuthUiClient.getSignedInUser()!!,
+                                    navController)
                             }
                             composable(Screen.FoodCatalog.route) {
                                 LaunchedEffect(key1 = Unit) {
@@ -212,7 +225,7 @@ class MainActivity : ComponentActivity() {
                                         navController.navigate(Screen.SignIn.route)
                                     }
                                 }
-                                FoodCatalog(navController)
+                                FoodCatalog(googleAuthUiClient.getSignedInUser()!!, navController)
                             }
                             composable(Screen.AccessoriesCatalog.route) {
                                 LaunchedEffect(key1 = Unit) {
@@ -220,7 +233,10 @@ class MainActivity : ComponentActivity() {
                                         navController.navigate(Screen.SignIn.route)
                                     }
                                 }
-                                AccessoriesCatalog(navController)
+                                AccessoriesCatalog(
+                                    googleAuthUiClient.getSignedInUser()!!,
+                                    navController
+                                )
                             }
                             composable(Screen.Profile.route) {
                                 LaunchedEffect(key1 = Unit) {

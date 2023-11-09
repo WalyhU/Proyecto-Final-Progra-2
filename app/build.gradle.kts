@@ -65,6 +65,10 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
 
+    // Animation
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha07")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.1.0-alpha07")
+
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("com.google.firebase:firebase-auth:22.2.0")
     implementation("com.google.firebase:firebase-auth-ktx:22.2.0")

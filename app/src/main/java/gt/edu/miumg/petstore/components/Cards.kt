@@ -21,6 +21,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,16 +37,20 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Scale
 import gt.edu.miumg.petstore.R
-import gt.edu.miumg.petstore.models.CarritoState
+import gt.edu.miumg.petstore.models.CartState
 import gt.edu.miumg.petstore.models.PetState
-import gt.edu.miumg.petstore.viewmodels.CarritoViewModel
+import gt.edu.miumg.petstore.sign_in.UserData
+import gt.edu.miumg.petstore.viewmodels.CartViewModel
 
 @Composable
 fun Cards(
+    userData: UserData,
     data: PetState,
     modifier: Modifier = Modifier.padding(5.dp),
     shape: RoundedCornerShape = RoundedCornerShape(10.dp),
-    carritoViewModel: CarritoViewModel
+    cartViewModel: CartViewModel,
+    inCart: MutableState<Boolean>,
+    animationData: MutableState<PetState>,
 ) {
     Card(
         colors = CardDefaults.cardColors(
@@ -82,11 +87,11 @@ fun Cards(
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column (
+            Column(
                 modifier = Modifier
                     .width(120.dp),
                 horizontalAlignment = Alignment.Start
-            ){
+            ) {
                 Text(
                     text = data.title,
                     style = MaterialTheme.typography.bodyLarge,
@@ -109,7 +114,7 @@ fun Cards(
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
             }
-            Column (
+            Column(
                 modifier = Modifier
                     .height(90.dp)
                     .width(50.dp),
@@ -125,15 +130,21 @@ fun Cards(
                         .width(20.dp)
                 )
                 IconButton(onClick = {
-                    val cartData = CarritoState(
-                        uid = "123" + data.title,
-                        title = data.title,
-                        description = data.description,
-                        price = data.price,
-                        image = data.image,
-                        quantity = 1
+                    // Activar la animacion asignandole a initProgress el valor de progress
+                    inCart.value = true
+                    animationData.value = data
+                    val cartData = CartState(
+                        items = mutableMapOf(
+                            data.title to gt.edu.miumg.petstore.models.CartItem(
+                                description = data.description,
+                                image = data.image,
+                                price = data.price,
+                                quantity = 1,
+                                title = data.title
+                            )
+                        )
                     )
-                    carritoViewModel.addCarrito(cartData)
+                    cartViewModel.setCartInfo(userData, cartData)
                 }) {
                     Icon(
                         Icons.Filled.ShoppingCart,

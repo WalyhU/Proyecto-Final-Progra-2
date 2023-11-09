@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import gt.edu.miumg.petstore.models.PetState
-import gt.edu.miumg.petstore.use_cases.PetUseCases
+import gt.edu.miumg.petstore.use_cases.PetUseCases.PetUseCases
 import gt.edu.miumg.petstore.util.Response
 import kotlinx.coroutines.launch
 import javax.inject.Inject

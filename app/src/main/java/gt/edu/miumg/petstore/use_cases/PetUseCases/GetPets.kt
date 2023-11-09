@@ -1,4 +1,4 @@
-package gt.edu.miumg.petstore.use_cases
+package gt.edu.miumg.petstore.use_cases.PetUseCases
 
 import gt.edu.miumg.petstore.repository.PetRepository
 import javax.inject.Inject

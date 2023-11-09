@@ -1,5 +1,6 @@
 package gt.edu.miumg.petstore.data
 
+import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import gt.edu.miumg.petstore.models.PetState
 import gt.edu.miumg.petstore.repository.PetRepository
@@ -18,8 +19,9 @@ class PetRepositoryImpl @Inject constructor(
         val snapShotListener = firebaseFirestore.collection(COLLECTION_PETS)
             .addSnapshotListener { value, error ->
                 val response = if (value != null) {
+                    Log.d("PetRepositoryImpl", "getPet: ${value.toObjects(PetState::class.java)}")
                     val petInfo = value.toObjects(PetState::class.java)
-                    Response.Success<PetState>(petInfo!!)
+                    Response.Success(petInfo!!)
                 } else {
                     Response.Error(error?.message!!)
                 }
