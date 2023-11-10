@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -50,6 +51,7 @@ import gt.edu.miumg.petstore.models.PetState
 import gt.edu.miumg.petstore.sign_in.UserData
 import gt.edu.miumg.petstore.util.Response
 import gt.edu.miumg.petstore.viewmodels.CartViewModel
+import gt.edu.miumg.petstore.viewmodels.FavoriteViewModel
 import gt.edu.miumg.petstore.viewmodels.SearchViewModel
 import kotlinx.coroutines.launch
 
@@ -71,6 +73,8 @@ fun HomePage(
     val openDetails = remember { mutableStateOf(false) }
     val inCart = remember { mutableStateOf(false) }
     val dataPet = remember { mutableStateOf(PetState()) }
+    val favoriteViewModel: FavoriteViewModel = hiltViewModel()
+    val inFavorites = remember { mutableStateOf(false) }
     Scaffold(
         floatingActionButton = {
             FloatingCarritoButton(
@@ -158,9 +162,9 @@ fun HomePage(
                                                 Row {
                                                     Button(
                                                         onClick = {
-                                                        dataPet.value = it
-                                                        openDetails.value = true
-                                                    },
+                                                            dataPet.value = it
+                                                            openDetails.value = true
+                                                        },
                                                         modifier = Modifier
                                                             .width(120.dp),
                                                     ) {
@@ -275,6 +279,7 @@ fun HomePage(
             CarouselCards(
                 openDetails = openDetails,
                 inCart = inCart,
+                inFavorites = inFavorites,
                 dataPet = dataPet,
                 userData = userData,
             )
@@ -289,6 +294,8 @@ fun HomePage(
                     inCart = inCart,
                     cartViewModel = cartViewModel,
                     userData = userData,
+                    favoriteViewModel = favoriteViewModel,
+                    inFavorites = inFavorites,
                 )
             }
         }
@@ -356,9 +363,20 @@ fun HomePage(
                             fontWeight = FontWeight.ExtraBold
                         )
                         // Sheet content
-                        response.data?.forEach { data ->
-                            if (data != null) {
-                                CartItem(userData, data.items, cartViewModel, openBuySuccess)
+                        LazyColumn {
+                            response.data?.let {
+                                items(it.size) {
+                                    response.data?.forEach { data ->
+                                        if (data != null) {
+                                            CartItem(
+                                                userData,
+                                                data.items,
+                                                cartViewModel,
+                                                openBuySuccess
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

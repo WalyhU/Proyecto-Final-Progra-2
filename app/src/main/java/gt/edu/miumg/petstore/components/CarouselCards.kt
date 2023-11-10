@@ -22,6 +22,7 @@ import gt.edu.miumg.petstore.models.PetState
 import gt.edu.miumg.petstore.sign_in.UserData
 import gt.edu.miumg.petstore.util.Response
 import gt.edu.miumg.petstore.viewmodels.CartViewModel
+import gt.edu.miumg.petstore.viewmodels.FavoriteViewModel
 import gt.edu.miumg.petstore.viewmodels.PetViewModel
 import kotlin.math.absoluteValue
 
@@ -30,6 +31,7 @@ import kotlin.math.absoluteValue
 fun CarouselCards(
     userData: UserData,
     inCart: MutableState<Boolean>,
+    inFavorites: MutableState<Boolean>,
     dataPet: MutableState<PetState>,
     openDetails: MutableState<Boolean>,
 ) {
@@ -37,6 +39,7 @@ fun CarouselCards(
     val petviewmodel : PetViewModel = hiltViewModel()
     petviewmodel.getPetInfo()
     val cartViewModel: CartViewModel = hiltViewModel()
+    val favoriteViewModel: FavoriteViewModel = hiltViewModel()
     when(val response = petviewmodel.getPets.value) {
         is Response.Success -> {
             val pets = response.data
@@ -54,8 +57,6 @@ fun CarouselCards(
                     ) { page ->
                         pets[page]?.let {
                             Cards(
-                                animationData = dataPet,
-                                inCart = inCart,
                                 userData = userData,
                                 data = it,
                                 modifier = Modifier
@@ -91,7 +92,11 @@ fun CarouselCards(
                                         openDetails.value = true
                                         dataPet.value = it  },
                                 shape = RoundedCornerShape(35.dp),
-                                cartViewModel = cartViewModel
+                                cartViewModel = cartViewModel,
+                                favoriteViewModel = favoriteViewModel,
+                                inCart = inCart,
+                                animationData = dataPet,
+                                inFavorites = inFavorites
                             )
                         }
                     }

@@ -42,12 +42,4 @@ class CartViewModel @Inject constructor(
             }
         }
     }
-
-    fun deleteElement(userData: UserData, cartState: CartState) {
-        viewModelScope.launch {
-            cartUseCases.deleteElement(userData, cartState).collect {
-                _setCart.value = it
-            }
-        }
-    }
 }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
@@ -57,6 +58,7 @@ import gt.edu.miumg.petstore.models.PetState
 import gt.edu.miumg.petstore.sign_in.UserData
 import gt.edu.miumg.petstore.util.Response
 import gt.edu.miumg.petstore.viewmodels.CartViewModel
+import gt.edu.miumg.petstore.viewmodels.FavoriteViewModel
 import gt.edu.miumg.petstore.viewmodels.PetViewModel
 import gt.edu.miumg.petstore.viewmodels.SearchViewModel
 import kotlinx.coroutines.launch
@@ -83,6 +85,9 @@ fun AccessoriesCatalog(
     petviewmodel.getAccessoryInfo()
     // Detalles
     val openDetails = remember { mutableStateOf(false) }
+    // Favoritos
+    val favoriteViewModel: FavoriteViewModel = hiltViewModel()
+    val inFavorites = remember { mutableStateOf(false) }
     // Busqueda
     val searchViewModel: SearchViewModel = hiltViewModel()
     val query = remember { mutableStateOf("") }
@@ -215,6 +220,8 @@ fun AccessoriesCatalog(
                             inCart = inCart,
                             cartViewModel = cartViewModel,
                             userData = userData,
+                            favoriteViewModel = favoriteViewModel,
+                            inFavorites = inFavorites,
                         )
                     }
                 }
@@ -281,16 +288,24 @@ fun AccessoriesCatalog(
                                     fontWeight = FontWeight.ExtraBold
                                 )
                                 // Sheet content
-                                response.data?.forEach { data ->
-                                    if (data != null) {
-                                        CartItem(
-                                            userData,
-                                            data.items,
-                                            cartViewModel,
-                                            openBuySuccess
-                                        )
+                                LazyColumn(
+                                    content = {
+                                        response.data?.let { it1 ->
+                                            items(it1.size) {
+                                                response.data?.forEach { data ->
+                                                    if (data != null) {
+                                                        CartItem(
+                                                            userData,
+                                                            data.items,
+                                                            cartViewModel,
+                                                            openBuySuccess
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
-                                }
+                                )
                             }
                         }
                     }
@@ -316,15 +331,17 @@ fun AccessoriesCatalog(
                                         Cards(
                                             userData = userData,
                                             food,
-                                            cartViewModel = cartViewModel,
-                                            inCart = inCart,
-                                            animationData = dataPet,
                                             modifier = Modifier
                                                 .padding(5.dp)
                                                 .clickable {
                                                     openDetails.value = true
                                                     dataPet.value = food
-                                                }
+                                                },
+                                            cartViewModel = cartViewModel,
+                                            favoriteViewModel = favoriteViewModel,
+                                            inCart = inCart,
+                                            animationData = dataPet,
+                                            inFavorites = inFavorites
                                         )
                                     }
                                 }

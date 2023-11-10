@@ -96,36 +96,4 @@ class CartRepositoryImpl @Inject constructor(
             Response.Error(e.localizedMessage ?: "Error inesperado")
         }
     }
-
-    override fun deleteElement(userData: UserData, cart: CartState): Flow<Response<Boolean>> =
-        flow {
-            operationSuccessful = false
-            try {
-                val cartObj = mutableMapOf<String?, Any?>()
-                cart.items.forEach { (key, value) ->
-                    // Aquí se puede hacer un if para verificar si el elemento es el que se quiere eliminar
-                    // y no agregarlo al objeto
-                    if (value.quantity != 0L) {
-                        cartObj[key] = value
-                    }
-                }
-                firebaseFirestore.collection(COLLECTION_CART)
-                    .document(userData.userId)
-                    .update(cartObj)
-                    .addOnSuccessListener {
-                        operationSuccessful = true
-                    }
-                    .await()
-                if (operationSuccessful) {
-                    Log.d("CartRepositoryImpl", "setCart: $operationSuccessful")
-                    emit(Response.Success(mutableListOf(true)))
-                } else {
-                    Log.d("CartRepositoryImpl", "Error1: $operationSuccessful")
-                    emit(Response.Error("Error al actualizar el carrito"))
-                }
-            } catch (e: Exception) {
-                Log.d("CartRepositoryImpl", "Error2: ${e.localizedMessage}")
-                Response.Error(e.localizedMessage ?: "Error inesperado")
-            }
-        }
 }

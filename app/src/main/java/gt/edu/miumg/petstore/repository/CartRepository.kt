@@ -8,5 +8,4 @@ import kotlinx.coroutines.flow.Flow
 interface CartRepository {
     fun getCart(userData: UserData): Flow<Response<CartState>>
     fun setCart(userData: UserData, cart: CartState): Flow<Response<Boolean>>
-    fun deleteElement(userData: UserData, cart: CartState): Flow<Response<Boolean>>
 }

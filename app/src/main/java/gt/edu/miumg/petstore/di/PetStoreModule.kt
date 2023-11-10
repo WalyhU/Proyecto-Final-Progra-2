@@ -6,15 +6,20 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import gt.edu.miumg.petstore.data.CartRepositoryImpl
+import gt.edu.miumg.petstore.data.FavoriteRepositoryImpl
 import gt.edu.miumg.petstore.data.PetRepositoryImpl
 import gt.edu.miumg.petstore.data.SearchRepositoryImpl
 import gt.edu.miumg.petstore.repository.CartRepository
+import gt.edu.miumg.petstore.repository.FavoriteRepository
 import gt.edu.miumg.petstore.repository.PetRepository
 import gt.edu.miumg.petstore.repository.SearchRepository
 import gt.edu.miumg.petstore.use_cases.CartUseCases.CartUseCases
-import gt.edu.miumg.petstore.use_cases.CartUseCases.DeleteElement
 import gt.edu.miumg.petstore.use_cases.CartUseCases.GetCart
 import gt.edu.miumg.petstore.use_cases.CartUseCases.SetCart
+import gt.edu.miumg.petstore.use_cases.FavoriteUseCases.DeleteFavorites
+import gt.edu.miumg.petstore.use_cases.FavoriteUseCases.FavoriteUseCases
+import gt.edu.miumg.petstore.use_cases.FavoriteUseCases.GetFavorites
+import gt.edu.miumg.petstore.use_cases.FavoriteUseCases.SetFavorite
 import gt.edu.miumg.petstore.use_cases.PetUseCases.GetAccessory
 import gt.edu.miumg.petstore.use_cases.PetUseCases.GetFood
 import gt.edu.miumg.petstore.use_cases.PetUseCases.GetPets
@@ -58,7 +63,6 @@ object PetStoreModule {
     fun provideCartUseCases(repository: CartRepository) = CartUseCases(
         getCart = GetCart(repository),
         setCart = SetCart(repository),
-        deleteElement = DeleteElement(repository)
     )
 
     @Singleton
@@ -72,5 +76,19 @@ object PetStoreModule {
     fun provideSearchUseCases(repository: SearchRepository) = SearchUseCases(
         getAllSearch = GetAllSearch(repository),
         getSearchByCollection = GetSearchByCollection(repository)
+    )
+
+    @Singleton
+    @Provides
+    fun provideFavoriteRepository(firebaseFirestore: FirebaseFirestore): FavoriteRepository {
+        return FavoriteRepositoryImpl(firebaseFirestore)
+    }
+
+    @Singleton
+    @Provides
+    fun provideFavoriteUseCases(repository: FavoriteRepository) = FavoriteUseCases(
+        getFavorites = GetFavorites(repository),
+        setFavorite = SetFavorite(repository),
+        deleteFavorites = DeleteFavorites(repository)
     )
 }

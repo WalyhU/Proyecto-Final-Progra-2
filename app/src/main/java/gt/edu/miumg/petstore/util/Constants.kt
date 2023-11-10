@@ -5,4 +5,5 @@ object Constants {
     const val COLLECTION_CART = "carrito"
     const val COLLECTION_FOOD = "alimentos"
     const val COLLECTION_ACCESSORIES = "accesorios"
+    const val COLLECTION_FAVORITES = "favoritos"
 }

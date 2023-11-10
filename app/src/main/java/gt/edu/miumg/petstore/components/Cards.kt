@@ -38,9 +38,12 @@ import coil.request.ImageRequest
 import coil.size.Scale
 import gt.edu.miumg.petstore.R
 import gt.edu.miumg.petstore.models.CartState
+import gt.edu.miumg.petstore.models.FavoriteState
 import gt.edu.miumg.petstore.models.PetState
 import gt.edu.miumg.petstore.sign_in.UserData
+import gt.edu.miumg.petstore.util.Response
 import gt.edu.miumg.petstore.viewmodels.CartViewModel
+import gt.edu.miumg.petstore.viewmodels.FavoriteViewModel
 
 @Composable
 fun Cards(
@@ -49,8 +52,10 @@ fun Cards(
     modifier: Modifier = Modifier.padding(5.dp),
     shape: RoundedCornerShape = RoundedCornerShape(10.dp),
     cartViewModel: CartViewModel,
+    favoriteViewModel: FavoriteViewModel,
     inCart: MutableState<Boolean>,
     animationData: MutableState<PetState>,
+    inFavorites: MutableState<Boolean>,
 ) {
     Card(
         colors = CardDefaults.cardColors(
@@ -102,7 +107,8 @@ fun Cards(
                 )
                 // Limitar la descripcion a 2 lineas
                 Text(
-                    text = if (data.description.toString().length > 25) data.description.toString().substring(0, 25) + "..." else data.description.toString(),
+                    text = if (data.description.toString().length > 25) data.description.toString()
+                        .substring(0, 25) + "..." else data.description.toString(),
                     fontSize = 12.sp,
                     textAlign = TextAlign.Left,
                     modifier = Modifier.padding(bottom = 8.dp)
@@ -122,15 +128,44 @@ fun Cards(
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.End
             ) {
-                IconButton(onClick = { /*TODO*/ }) {
-                    Icon(
-                        Icons.Outlined.FavoriteBorder,
-                        contentDescription = null,
-                        tint = colorResource(id = R.color.favorite_color),
-                        modifier = Modifier
-                            .height(20.dp)
-                            .width(20.dp)
-                    )
+                if (comprobarFavorito(userData, data, favoriteViewModel)) {
+                    IconButton(onClick = {
+                        favoriteViewModel.deleteFavoriteInfo(userData, data)
+                    }) {
+                        Icon(
+                            painterResource(id = R.drawable.unfavorite),
+                            contentDescription = null,
+                            tint = colorResource(id = R.color.favorite_color),
+                            modifier = Modifier
+                                .height(20.dp)
+                                .width(20.dp)
+                        )
+                    }
+                } else {
+                    IconButton(onClick = {
+                        inFavorites.value = true
+                        animationData.value = data
+                        val favoriteData = FavoriteState(
+                            items = mutableMapOf(
+                                data.title to PetState(
+                                    description = data.description,
+                                    image = data.image,
+                                    price = data.price,
+                                    title = data.title
+                                )
+                            )
+                        )
+                        favoriteViewModel.setFavoriteInfo(userData, favoriteData)
+                    }) {
+                        Icon(
+                            Icons.Outlined.FavoriteBorder,
+                            contentDescription = null,
+                            tint = colorResource(id = R.color.favorite_color),
+                            modifier = Modifier
+                                .height(20.dp)
+                                .width(20.dp)
+                        )
+                    }
                 }
                 IconButton(onClick = {
                     // Activar la animacion asignandole a initProgress el valor de progress
@@ -161,6 +196,32 @@ fun Cards(
             }
         }
     }
+}
 
-
+// Comprobar si el producto esta en favoritos
+fun comprobarFavorito(
+    userData: UserData,
+    data: PetState,
+    favoriteViewModel: FavoriteViewModel
+): Boolean {
+    var inFavorites = false
+    favoriteViewModel.getFavoritesInfo(userData)
+    when (val response = favoriteViewModel.getFavoritesData.value) {
+        is Response.Success -> {
+            val favorites = response.data
+            if (favorites != null) {
+                favorites.forEach { favorite ->
+                    if (favorite != null) {
+                        if (favorite.items.containsKey(data.title)) {
+                            inFavorites = true
+                        }
+                    }
+                }
+            }
+        }
+        else -> {
+            inFavorites = false
+        }
+    }
+    return inFavorites
 }

@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -37,9 +38,12 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import gt.edu.miumg.petstore.R
 import gt.edu.miumg.petstore.models.CartState
+import gt.edu.miumg.petstore.models.FavoriteState
 import gt.edu.miumg.petstore.models.PetState
 import gt.edu.miumg.petstore.sign_in.UserData
+import gt.edu.miumg.petstore.util.Response
 import gt.edu.miumg.petstore.viewmodels.CartViewModel
+import gt.edu.miumg.petstore.viewmodels.FavoriteViewModel
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,7 +53,9 @@ fun PetDetails(
     data: PetState,
     inCart: MutableState<Boolean>,
     cartViewModel: CartViewModel,
-    userData: UserData
+    userData: UserData,
+    favoriteViewModel: FavoriteViewModel,
+    inFavorites: MutableState<Boolean>
 ) {
     val selectQuantity = remember { mutableStateOf(1) }
     AlertDialog(
@@ -167,15 +173,44 @@ fun PetDetails(
                                     }
                                 }
                             }
-                            IconButton(onClick = { /*TODO*/ }) {
-                                Icon(
-                                    Icons.Outlined.FavoriteBorder,
-                                    contentDescription = null,
-                                    tint = colorResource(id = R.color.favorite_color),
-                                    modifier = Modifier
-                                        .height(20.dp)
-                                        .width(20.dp)
-                                )
+
+                            if (comprobarFavorito(userData, data, favoriteViewModel)) {
+                                IconButton(onClick = {
+                                    favoriteViewModel.deleteFavoriteInfo(userData, data)
+                                }) {
+                                    Icon(
+                                        painterResource(id = R.drawable.unfavorite),
+                                        contentDescription = null,
+                                        tint = colorResource(id = R.color.favorite_color),
+                                        modifier = Modifier
+                                            .height(20.dp)
+                                            .width(20.dp)
+                                    )
+                                }
+                            } else {
+                                IconButton(onClick = {
+                                    inFavorites.value = true
+                                    val favoriteData = FavoriteState(
+                                        items = mutableMapOf(
+                                            data.title to PetState(
+                                                description = data.description,
+                                                image = data.image,
+                                                price = data.price,
+                                                title = data.title
+                                            )
+                                        )
+                                    )
+                                    favoriteViewModel.setFavoriteInfo(userData, favoriteData)
+                                }) {
+                                    Icon(
+                                        Icons.Outlined.FavoriteBorder,
+                                        contentDescription = null,
+                                        tint = colorResource(id = R.color.favorite_color),
+                                        modifier = Modifier
+                                            .height(20.dp)
+                                            .width(20.dp)
+                                    )
+                                }
                             }
                         }
 
@@ -218,4 +253,33 @@ fun PetDetails(
             }
         }
     )
+
+    // Comprobar si el producto esta en favoritos
+    fun comprobarFavorito(
+        userData: UserData,
+        data: PetState,
+        favoriteViewModel: FavoriteViewModel
+    ): Boolean {
+        var inFavorites = false
+        favoriteViewModel.getFavoritesInfo(userData)
+        when (val response = favoriteViewModel.getFavoritesData.value) {
+            is Response.Success -> {
+                val favorites = response.data
+                if (favorites != null) {
+                    favorites.forEach { favorite ->
+                        if (favorite != null) {
+                            if (favorite.items.containsKey(data.title)) {
+                                inFavorites = true
+                            }
+                        }
+                    }
+                }
+            }
+            else -> {
+                inFavorites = false
+            }
+        }
+        return inFavorites
+    }
+
 }

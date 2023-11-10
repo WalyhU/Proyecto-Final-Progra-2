@@ -1,9 +1,6 @@
 package gt.edu.miumg.petstore.components
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,7 +36,6 @@ import gt.edu.miumg.petstore.models.CartItem
 import gt.edu.miumg.petstore.models.CartState
 import gt.edu.miumg.petstore.sign_in.UserData
 import gt.edu.miumg.petstore.viewmodels.CartViewModel
-import kotlin.math.absoluteValue
 
 @Composable
 fun CartItem(
@@ -63,20 +59,6 @@ fun CartItem(
     data?.forEach { (key, value) ->
         AnimatedVisibility(value.quantity?.toInt() != 0) {
             ListItem(
-                modifier = Modifier
-                    .scrollable(
-                        state = rememberScrollableState { delta ->
-                            // Disallow scrolling if the user is trying to scroll horizontally
-                            // This is to allow the parent LazyColumn to scroll vertically
-                            if (delta.absoluteValue > 0f) {
-                                0f
-                            } else {
-                                delta
-                            }
-                        },
-                        orientation = Orientation.Vertical,
-                        enabled = true
-                    ),
                 // Agregar imagen de la mascota
                 leadingContent = {
                     AsyncImage(
