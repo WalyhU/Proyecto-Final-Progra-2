@@ -1,6 +1,9 @@
 package gt.edu.miumg.petstore.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,6 +39,7 @@ import gt.edu.miumg.petstore.models.CartItem
 import gt.edu.miumg.petstore.models.CartState
 import gt.edu.miumg.petstore.sign_in.UserData
 import gt.edu.miumg.petstore.viewmodels.CartViewModel
+import kotlin.math.absoluteValue
 
 @Composable
 fun CartItem(
@@ -45,7 +49,7 @@ fun CartItem(
     openBuySuccess: MutableState<Boolean>
 ) {
     // Si todos los documentos tienen una cantidad de 0, se muestra una imagen de carrito vacio
-    if(data.all { (_, value) -> value.quantity?.toInt() == 0 }) {
+    if (data.all { (_, value) -> value.quantity?.toInt() == 0 }) {
         AsyncImage(
             model = "https://www.distritomoda.com.ar/sites/all/themes/omega_btob/images/carrito_vacio_nuevo.png",
             contentDescription = "Empty Cart",
@@ -59,6 +63,20 @@ fun CartItem(
     data?.forEach { (key, value) ->
         AnimatedVisibility(value.quantity?.toInt() != 0) {
             ListItem(
+                modifier = Modifier
+                    .scrollable(
+                        state = rememberScrollableState { delta ->
+                            // Disallow scrolling if the user is trying to scroll horizontally
+                            // This is to allow the parent LazyColumn to scroll vertically
+                            if (delta.absoluteValue > 0f) {
+                                0f
+                            } else {
+                                delta
+                            }
+                        },
+                        orientation = Orientation.Vertical,
+                        enabled = true
+                    ),
                 // Agregar imagen de la mascota
                 leadingContent = {
                     AsyncImage(
@@ -176,9 +194,10 @@ fun CartItem(
     ) {
         Text(
             text = "Total: Q${
-                // Convertir la cantidad a Double
                 data?.map { it.value.price?.times(it.value.quantity ?: 0) }
-                    ?.sumByDouble { it ?: 0.0 }
+                    ?.sumByDouble { it ?: 0.0 }?.let {
+                        String.format("%.2f", it)
+                    }
             }",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.ExtraBold

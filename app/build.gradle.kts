@@ -76,7 +76,7 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx:24.9.1")
     val nav_version = "2.5.3"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.1.1")
-    implementation("androidx.core:core-ktx:1.9.0")
+    implementation("androidx.core:core-ktx:1.10.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")

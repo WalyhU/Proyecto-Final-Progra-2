@@ -3,8 +3,6 @@ package gt.edu.miumg.petstore.data
 import android.util.Log
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.FirebaseFirestore
-import gt.edu.miumg.petstore.models.AccessoryState
-import gt.edu.miumg.petstore.models.FoodState
 import gt.edu.miumg.petstore.models.PetState
 import gt.edu.miumg.petstore.models.SearchState
 import gt.edu.miumg.petstore.repository.SearchRepository
@@ -23,27 +21,27 @@ class SearchRepositoryImpl @Inject constructor(
     override fun getAllSearch(query: String): Flow<Response<SearchState>> = callbackFlow {
         Response.Loading
         var petList: MutableList<PetState>
-        var foodList: MutableList<FoodState>
-        var accessoryList: MutableList<AccessoryState>
+        var foodList: MutableList<PetState>
+        var accessoryList: MutableList<PetState>
 
         val snapShotListenerPets = firebaseFirestore.collection(COLLECTION_PETS)
-            .whereEqualTo("title", query)
+            .whereArrayContains("keywords", query.lowercase())
             .get()
 
         val snapShotListenerFood = firebaseFirestore.collection(COLLECTION_FOOD)
-            .whereEqualTo("title", query)
+            .whereArrayContains("keywords", query.lowercase())
             .get()
 
         val snapShotListenerAccessories = firebaseFirestore.collection(COLLECTION_ACCESSORIES)
-            .whereEqualTo("title", query)
+            .whereArrayContains("keywords", query.lowercase())
             .get()
 
         Tasks.whenAllComplete(snapShotListenerPets, snapShotListenerFood, snapShotListenerAccessories)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     petList = snapShotListenerPets.result?.toObjects(PetState::class.java) ?: mutableListOf()
-                    foodList = snapShotListenerFood.result?.toObjects(FoodState::class.java) ?: mutableListOf()
-                    accessoryList = snapShotListenerAccessories.result?.toObjects(AccessoryState::class.java) ?: mutableListOf()
+                    foodList = snapShotListenerFood.result?.toObjects(PetState::class.java) ?: mutableListOf()
+                    accessoryList = snapShotListenerAccessories.result?.toObjects(PetState::class.java) ?: mutableListOf()
 
                     val response = Response.Success(mutableListOf(SearchState(query, petList, foodList, accessoryList)))
                     trySend(response).isSuccess

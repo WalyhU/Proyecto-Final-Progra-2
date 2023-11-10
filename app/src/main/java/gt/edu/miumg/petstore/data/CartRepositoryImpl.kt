@@ -21,6 +21,31 @@ class CartRepositoryImpl @Inject constructor(
     private var operationSuccessful = false
     override fun getCart(userData: UserData): Flow<Response<CartState>> = callbackFlow {
         Response.Loading
+
+        // Comprobar si el usuario tiene un carrito
+        val cart = firebaseFirestore.collection(COLLECTION_CART)
+            .document(userData.userId)
+            .get()
+            .await()
+        if (!cart.exists()) {
+            // Si no tiene carrito, crear uno
+            val cartObj = mutableMapOf<String?, Any?>()
+            cartObj["item"] = CartItem(
+                description = "",
+                image = "",
+                price = 0.0,
+                quantity = 0,
+                title = ""
+            )
+            firebaseFirestore.collection(COLLECTION_CART)
+                .document(userData.userId)
+                .set(cartObj)
+                .addOnSuccessListener {
+                    operationSuccessful = true
+                }
+                .await()
+        }
+
         val snapShotListener = firebaseFirestore.collection(COLLECTION_CART)
             .document(userData.userId)
             .addSnapshotListener { snapshot, error ->

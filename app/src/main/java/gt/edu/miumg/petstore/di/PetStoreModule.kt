@@ -15,6 +15,8 @@ import gt.edu.miumg.petstore.use_cases.CartUseCases.CartUseCases
 import gt.edu.miumg.petstore.use_cases.CartUseCases.DeleteElement
 import gt.edu.miumg.petstore.use_cases.CartUseCases.GetCart
 import gt.edu.miumg.petstore.use_cases.CartUseCases.SetCart
+import gt.edu.miumg.petstore.use_cases.PetUseCases.GetAccessory
+import gt.edu.miumg.petstore.use_cases.PetUseCases.GetFood
 import gt.edu.miumg.petstore.use_cases.PetUseCases.GetPets
 import gt.edu.miumg.petstore.use_cases.PetUseCases.PetUseCases
 import gt.edu.miumg.petstore.use_cases.SearchUseCases.GetAllSearch
@@ -40,7 +42,9 @@ object PetStoreModule {
     @Singleton
     @Provides
     fun providePetUseCases(repository: PetRepository) = PetUseCases(
-        getPets = GetPets(repository)
+        getPets = GetPets(repository),
+        getFood = GetFood(repository),
+        getAccessory = GetAccessory(repository)
     )
 
     @Singleton

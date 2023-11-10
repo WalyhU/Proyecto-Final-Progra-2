@@ -80,15 +80,23 @@ fun PetDetails(
                             fontSize = 25.sp,
                             fontWeight = FontWeight.ExtraBold,
                             textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(8.dp)
+                            modifier = Modifier
+                                .width(203.dp)
+                                .padding(8.dp)
                         )
-                        Column {
+                        Column (
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalAlignment = Alignment.End
+
+                        ) {
                             Text(
                                 text = "Precio:",
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.ExtraBold,
                                 textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(horizontal = 16.dp)
+                                modifier = Modifier
+                                    .padding(horizontal = 16.dp)
                             )
                             Text(
                                 text = "Q.${data.price}",
@@ -99,7 +107,11 @@ fun PetDetails(
                             )
                         }
                     }
-                    Column {
+                    Column (
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.Start
+                    ) {
                         Text(
                             text = "Descripción:",
                             fontSize = 13.sp,
@@ -109,8 +121,8 @@ fun PetDetails(
                         )
                         Text(
                             text = data.description.toString(),
-                            style = MaterialTheme.typography.bodyLarge,
-                            textAlign = TextAlign.Center,
+                            fontSize = 14.sp,
+                            textAlign = TextAlign.Left,
                             modifier = Modifier.padding(horizontal = 16.dp)
                         )
 

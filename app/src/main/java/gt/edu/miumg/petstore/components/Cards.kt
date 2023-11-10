@@ -100,10 +100,11 @@ fun Cards(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
+                // Limitar la descripcion a 2 lineas
                 Text(
-                    text = data.description as String,
+                    text = if (data.description.toString().length > 25) data.description.toString().substring(0, 25) + "..." else data.description.toString(),
                     fontSize = 12.sp,
-                    textAlign = TextAlign.Center,
+                    textAlign = TextAlign.Left,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 Text(
@@ -160,4 +161,6 @@ fun Cards(
             }
         }
     }
+
+
 }

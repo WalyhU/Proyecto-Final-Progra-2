@@ -7,13 +7,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -71,20 +71,6 @@ fun HomePage(
     val openDetails = remember { mutableStateOf(false) }
     val inCart = remember { mutableStateOf(false) }
     val dataPet = remember { mutableStateOf(PetState()) }
-
-    when (val response = searchViewModel.getAllSearch.value) {
-        is Response.Loading -> {
-            Log.d("SEARCH", "Loading")
-        }
-
-        is Response.Error -> {
-            Log.d("SEARCH", "Error: ${response.message}")
-        }
-
-        is Response.Success -> {
-            Log.d("SEARCH", "Success: ${response.data.toString()}")
-        }
-    }
     Scaffold(
         floatingActionButton = {
             FloatingCarritoButton(
@@ -151,37 +137,41 @@ fun HomePage(
                             Log.d("SEARCH", "Success: ${response.data.toString()}")
                             response.data?.forEach { data ->
                                 if (data != null) {
-                                    data?.pets?.forEach { pet ->
+                                    data?.pets?.forEach {
                                         ListItem(
                                             // Agregar imagen de la mascota
                                             leadingContent = {
                                                 AsyncImage(
-                                                    model = pet.image,
+                                                    model = it.image,
                                                     contentDescription = "Pet Image",
                                                     alignment = Alignment.Center,
                                                     modifier = Modifier
-                                                        .size(30.dp)
+                                                        .size(45.dp)
                                                         .clip(CircleShape),
                                                     contentScale = ContentScale.Crop,
                                                     placeholder = painterResource(id = R.drawable.placeholder_image),
                                                 )
                                             },
-                                            headlineContent = { Text(pet.title.toString()) },
-                                            supportingContent = { Text(pet.price.toString()) },
+                                            headlineContent = { Text(it.title.toString()) },
+                                            supportingContent = { Text("Categoria: Mascotas") },
                                             trailingContent = {
                                                 Row {
-                                                    Button(onClick = {
-                                                        dataPet.value = pet
+                                                    Button(
+                                                        onClick = {
+                                                        dataPet.value = it
                                                         openDetails.value = true
-                                                    }) {
+                                                    },
+                                                        modifier = Modifier
+                                                            .width(120.dp),
+                                                    ) {
                                                         Icon(
                                                             Icons.Filled.Add,
                                                             contentDescription = "Add Icon",
-                                                            modifier = Modifier.size(24.dp)
+                                                            modifier = Modifier.size(15.dp)
                                                         )
                                                         Text(
-                                                            text = "Ver detalles",
-                                                            style = MaterialTheme.typography.titleMedium
+                                                            text = " Detalles",
+                                                            style = MaterialTheme.typography.bodySmall
                                                         )
                                                     }
                                                 }
@@ -192,76 +182,88 @@ fun HomePage(
                                     }
                                     data?.food?.forEach {
                                         ListItem(
-                                            // Agregar imagen de la comida
+                                            // Agregar imagen de la mascota
                                             leadingContent = {
                                                 AsyncImage(
                                                     model = it.image,
                                                     contentDescription = "Food Image",
                                                     alignment = Alignment.Center,
                                                     modifier = Modifier
-                                                        .size(30.dp)
+                                                        .size(45.dp)
                                                         .clip(CircleShape),
                                                     contentScale = ContentScale.Crop,
                                                     placeholder = painterResource(id = R.drawable.placeholder_image),
                                                 )
                                             },
                                             headlineContent = { Text(it.title.toString()) },
-                                            supportingContent = { Text(it.price.toString()) },
+                                            supportingContent = { Text("Categoria: Alimentos") },
                                             trailingContent = {
                                                 Row {
-                                                    Icon(
-                                                        Icons.Filled.ShoppingCart,
-                                                        contentDescription = "Cart Icon",
-                                                        modifier = Modifier.size(24.dp)
-                                                    )
-                                                    Text(
-                                                        text = "Agregado al carrito",
-                                                        style = MaterialTheme.typography.titleMedium
-                                                    )
+                                                    Button(
+                                                        onClick = {
+                                                            dataPet.value = it
+                                                            openDetails.value = true
+                                                        },
+                                                        modifier = Modifier
+                                                            .width(120.dp),
+                                                    ) {
+                                                        Icon(
+                                                            Icons.Filled.Add,
+                                                            contentDescription = "Add Icon",
+                                                            modifier = Modifier.size(15.dp)
+                                                        )
+                                                        Text(
+                                                            text = " Detalles",
+                                                            style = MaterialTheme.typography.bodySmall
+                                                        )
+                                                    }
                                                 }
                                             },
                                             modifier = Modifier
                                                 .fillMaxWidth(),
-                                            // Elevalo un poco con tonalElevation y shadowElevation
-                                            tonalElevation = 8.dp,
-                                            shadowElevation = 8.dp,
                                         )
                                     }
                                     data?.accessories?.forEach {
                                         ListItem(
-                                            // Agregar imagen del accesorio
+                                            // Agregar imagen de la mascota
                                             leadingContent = {
                                                 AsyncImage(
                                                     model = it.image,
                                                     contentDescription = "Accessory Image",
                                                     alignment = Alignment.Center,
                                                     modifier = Modifier
-                                                        .size(30.dp)
+                                                        .size(45.dp)
                                                         .clip(CircleShape),
                                                     contentScale = ContentScale.Crop,
                                                     placeholder = painterResource(id = R.drawable.placeholder_image),
                                                 )
                                             },
                                             headlineContent = { Text(it.title.toString()) },
-                                            supportingContent = { Text(it.price.toString()) },
+                                            supportingContent = { Text("Categoria: Accesorios") },
                                             trailingContent = {
                                                 Row {
-                                                    Icon(
-                                                        Icons.Filled.ShoppingCart,
-                                                        contentDescription = "Cart Icon",
-                                                        modifier = Modifier.size(24.dp)
-                                                    )
-                                                    Text(
-                                                        text = "Agregado al carrito",
-                                                        style = MaterialTheme.typography.titleMedium
-                                                    )
+                                                    Button(
+                                                        onClick = {
+                                                            dataPet.value = it
+                                                            openDetails.value = true
+                                                        },
+                                                        modifier = Modifier
+                                                            .width(120.dp),
+                                                    ) {
+                                                        Icon(
+                                                            Icons.Filled.Add,
+                                                            contentDescription = "Add Icon",
+                                                            modifier = Modifier.size(15.dp)
+                                                        )
+                                                        Text(
+                                                            text = " Detalles",
+                                                            style = MaterialTheme.typography.bodySmall
+                                                        )
+                                                    }
                                                 }
                                             },
                                             modifier = Modifier
                                                 .fillMaxWidth(),
-                                            // Elevalo un poco con tonalElevation y shadowElevation
-                                            tonalElevation = 8.dp,
-                                            shadowElevation = 8.dp,
                                         )
                                     }
                                 }

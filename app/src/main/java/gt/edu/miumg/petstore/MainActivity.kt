@@ -7,20 +7,14 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -31,7 +25,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -82,18 +75,11 @@ class MainActivity : ComponentActivity() {
                     val defaultRoute = Screen.Profile.route
                     val navController = rememberNavController()
                     val items = listOf(
-                        Screen.Home to Icons.Filled.Home,
-                        Screen.PetCatalog to Icons.Filled.List,
-                        Screen.FoodCatalog to Icons.Filled.Favorite,
-                        Screen.AccessoriesCatalog to Icons.Filled.Star,
-                        Screen.Profile to Icons.Filled.AccountCircle
-                    )
-                    var imageAnimation by remember { mutableStateOf("") }
-                    var animateButton by remember { mutableStateOf(false) }
-                    val animationProgress by animateFloatAsState(
-                        targetValue =
-                        if (animateButton) 1f else 0f,
-                        animationSpec = tween(durationMillis = 1000)
+                        Screen.Home to listOf("light" to R.drawable.home_icon, "dark" to R.drawable.home_icon_dark),
+                        Screen.PetCatalog to listOf("light" to R.drawable.pet_icon, "dark" to R.drawable.pet_icon_dark),
+                        Screen.FoodCatalog to listOf("light" to R.drawable.food_icon, "dark" to R.drawable.food_icon_dark),
+                        Screen.AccessoriesCatalog to listOf("light" to R.drawable.accessories_icon, "dark" to R.drawable.accessories_icon_dark),
+                        Screen.Profile to listOf("light" to R.drawable.accessories_icon, "dark" to R.drawable.accessories_icon_dark)
                     )
                     Scaffold(
                         bottomBar = {
@@ -114,10 +100,36 @@ class MainActivity : ComponentActivity() {
                                                         contentScale = ContentScale.Crop,
                                                     )
                                                 } else {
-                                                    Icon(
-                                                        imageVector = icon,
-                                                        contentDescription = null
-                                                    )
+                                                    // Comprobar si esta en modo oscuro o claro
+                                                    if (isSystemInDarkTheme()) {
+                                                        // Mostrar icono oscuro
+                                                        icon.forEach {
+                                                            if (it.first == "dark") {
+                                                                AsyncImage(
+                                                                    model = it.second,
+                                                                    contentDescription = null,
+                                                                    modifier = Modifier
+                                                                        .width(35.dp)
+                                                                        .height(25.dp),
+                                                                    contentScale = ContentScale.Inside,
+                                                                )
+                                                            }
+                                                        }
+                                                    } else {
+                                                        // Mostrar icono claro
+                                                        icon.forEach {
+                                                            if (it.first == "light") {
+                                                                AsyncImage(
+                                                                    model = it.second,
+                                                                    contentDescription = null,
+                                                                    modifier = Modifier
+                                                                        .width(35.dp)
+                                                                        .height(25.dp),
+                                                                    contentScale = ContentScale.Inside,
+                                                                )
+                                                            }
+                                                        }
+                                                    }
                                                 }
                                             },
                                             label = { Text(stringResource(screen.resourceId)) },
@@ -205,9 +217,11 @@ class MainActivity : ComponentActivity() {
                                         navController.navigate(Screen.SignIn.route)
                                     }
                                 }
-                                HomePage(
-                                    userData = googleAuthUiClient.getSignedInUser()!!
-                                )
+                                googleAuthUiClient.getSignedInUser()?.let { it1 ->
+                                    HomePage(
+                                        userData = it1
+                                    )
+                                }
                             }
                             composable(Screen.PetCatalog.route) {
                                 LaunchedEffect(key1 = Unit) {
@@ -217,7 +231,8 @@ class MainActivity : ComponentActivity() {
                                 }
                                 PetCatalog(
                                     googleAuthUiClient.getSignedInUser()!!,
-                                    navController)
+                                    navController
+                                )
                             }
                             composable(Screen.FoodCatalog.route) {
                                 LaunchedEffect(key1 = Unit) {
