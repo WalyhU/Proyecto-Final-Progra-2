@@ -364,8 +364,8 @@ fun HomePage(
                         )
                         // Sheet content
                         LazyColumn {
-                            response.data?.let {
-                                items(it.size) {
+                            response.data?.let { it1 ->
+                                items(it1.size) {
                                     response.data?.forEach { data ->
                                         if (data != null) {
                                             CartItem(
@@ -378,6 +378,7 @@ fun HomePage(
                                     }
                                 }
                             }
+
                         }
                     }
                 }
