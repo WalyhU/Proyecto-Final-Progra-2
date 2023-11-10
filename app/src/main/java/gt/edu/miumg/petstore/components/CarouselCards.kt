@@ -1,6 +1,7 @@
 package gt.edu.miumg.petstore.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,7 +30,8 @@ import kotlin.math.absoluteValue
 fun CarouselCards(
     userData: UserData,
     inCart: MutableState<Boolean>,
-    animationImage: MutableState<PetState>,
+    dataPet: MutableState<PetState>,
+    openDetails: MutableState<Boolean>,
 ) {
     // Test para extraer datos de firebase
     val petviewmodel : PetViewModel = hiltViewModel()
@@ -52,7 +54,7 @@ fun CarouselCards(
                     ) { page ->
                         pets[page]?.let {
                             Cards(
-                                animationData = animationImage,
+                                animationData = dataPet,
                                 inCart = inCart,
                                 userData = userData,
                                 data = it,
@@ -84,7 +86,10 @@ fun CarouselCards(
                                                 )
                                             }
                                     }
-                                    .padding(10.dp),
+                                    .padding(10.dp)
+                                    .clickable {
+                                        openDetails.value = true
+                                        dataPet.value = it  },
                                 shape = RoundedCornerShape(35.dp),
                                 cartViewModel = cartViewModel
                             )

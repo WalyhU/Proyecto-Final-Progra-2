@@ -11,10 +11,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -40,6 +43,7 @@ import gt.edu.miumg.petstore.components.AddToCartAnimation
 import gt.edu.miumg.petstore.components.CarouselCards
 import gt.edu.miumg.petstore.components.CartItem
 import gt.edu.miumg.petstore.components.FloatingCarritoButton
+import gt.edu.miumg.petstore.components.PetDetails
 import gt.edu.miumg.petstore.components.SuccessDialog
 import gt.edu.miumg.petstore.models.CartState
 import gt.edu.miumg.petstore.models.PetState
@@ -64,8 +68,9 @@ fun HomePage(
     val activeSearch = remember { mutableStateOf(false) }
     searchViewModel.getAllSearch(query.value)
     val openBuySuccess = remember { mutableStateOf(false) }
+    val openDetails = remember { mutableStateOf(false) }
     val inCart = remember { mutableStateOf(false) }
-    val animationData = remember { mutableStateOf(PetState()) }
+    val dataPet = remember { mutableStateOf(PetState()) }
 
     when (val response = searchViewModel.getAllSearch.value) {
         is Response.Loading -> {
@@ -89,7 +94,7 @@ fun HomePage(
                 })
         },
         bottomBar = {
-            AddToCartAnimation(inCart = inCart, data = animationData)
+            AddToCartAnimation(inCart = inCart, data = dataPet)
         }
     ) { contentPadding ->
         // Screen content
@@ -108,14 +113,29 @@ fun HomePage(
                 active = activeSearch.value,
                 onActiveChange = { activeSearch.value = it },
                 placeholder = { if (!activeSearch.value) Text("Buscar...") else Text("Buscar entre todo el catalogo") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
                 tonalElevation = 1.dp,
                 shadowElevation = 5.dp,
                 trailingIcon = {
-                    Icon(
-                        Icons.Filled.Search,
-                        contentDescription = "Search Icon",
-                        modifier = Modifier.size(24.dp)
-                    )
+                    if (activeSearch.value) {
+                        IconButton(onClick = {
+                            activeSearch.value = false
+                            query.value = ""
+                        }) {
+                            Icon(
+                                Icons.Filled.Close,
+                                contentDescription = "Cancel Icon",
+                            )
+                        }
+                    } else {
+                        Icon(
+                            Icons.Filled.Search,
+                            contentDescription = "Search Icon",
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                 },
                 content = {
                     when (val response = searchViewModel.getAllSearch.value) {
@@ -150,12 +170,20 @@ fun HomePage(
                                             supportingContent = { Text(pet.price.toString()) },
                                             trailingContent = {
                                                 Row {
-                                                    Icon(
-                                                        Icons.Filled.Add,
-                                                        contentDescription = "Cart Icon",
-                                                        modifier = Modifier.size(24.dp)
-                                                    )
-                                                    Text(text = "Ver detalles", style = MaterialTheme.typography.titleMedium)
+                                                    Button(onClick = {
+                                                        dataPet.value = pet
+                                                        openDetails.value = true
+                                                    }) {
+                                                        Icon(
+                                                            Icons.Filled.Add,
+                                                            contentDescription = "Add Icon",
+                                                            modifier = Modifier.size(24.dp)
+                                                        )
+                                                        Text(
+                                                            text = "Ver detalles",
+                                                            style = MaterialTheme.typography.titleMedium
+                                                        )
+                                                    }
                                                 }
                                             },
                                             modifier = Modifier
@@ -186,7 +214,10 @@ fun HomePage(
                                                         contentDescription = "Cart Icon",
                                                         modifier = Modifier.size(24.dp)
                                                     )
-                                                    Text(text = "Agregado al carrito", style = MaterialTheme.typography.titleMedium)
+                                                    Text(
+                                                        text = "Agregado al carrito",
+                                                        style = MaterialTheme.typography.titleMedium
+                                                    )
                                                 }
                                             },
                                             modifier = Modifier
@@ -220,7 +251,10 @@ fun HomePage(
                                                         contentDescription = "Cart Icon",
                                                         modifier = Modifier.size(24.dp)
                                                     )
-                                                    Text(text = "Agregado al carrito", style = MaterialTheme.typography.titleMedium)
+                                                    Text(
+                                                        text = "Agregado al carrito",
+                                                        style = MaterialTheme.typography.titleMedium
+                                                    )
                                                 }
                                             },
                                             modifier = Modifier
@@ -237,11 +271,26 @@ fun HomePage(
                 }
             )
             CarouselCards(
+                openDetails = openDetails,
                 inCart = inCart,
-                animationImage = animationData,
+                dataPet = dataPet,
                 userData = userData,
             )
         }
+        when {
+            openDetails.value -> {
+                PetDetails(
+                    onDismiss = {
+                        openDetails.value = false
+                    },
+                    data = dataPet.value,
+                    inCart = inCart,
+                    cartViewModel = cartViewModel,
+                    userData = userData,
+                )
+            }
+        }
+
         when (val response = cartViewModel.getCartData.value) {
             is Response.Loading -> {
                 Log.d("CART", "Loading")

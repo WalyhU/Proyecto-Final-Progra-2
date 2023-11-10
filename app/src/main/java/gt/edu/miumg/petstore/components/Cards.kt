@@ -121,14 +121,16 @@ fun Cards(
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.End
             ) {
-                Icon(
-                    Icons.Outlined.FavoriteBorder,
-                    contentDescription = null,
-                    tint = colorResource(id = R.color.favorite_color),
-                    modifier = Modifier
-                        .height(20.dp)
-                        .width(20.dp)
-                )
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(
+                        Icons.Outlined.FavoriteBorder,
+                        contentDescription = null,
+                        tint = colorResource(id = R.color.favorite_color),
+                        modifier = Modifier
+                            .height(20.dp)
+                            .width(20.dp)
+                    )
+                }
                 IconButton(onClick = {
                     // Activar la animacion asignandole a initProgress el valor de progress
                     inCart.value = true
